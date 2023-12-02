@@ -86,24 +86,6 @@ const updateSubscription = async (req, res, next) => {
   }
 };
 
-// const updateStatusContact = async (req, res, next) => {
-//   try {
-//     const { error } = contactFavoriteSchema.validate(req.body);
-//     if (error) {
-//       throw HttpError(400, 'missing field favorite');
-//     }
-//     const { id } = req.params;
-//     const { _id: owner } = req.user;
-//     const result = await Contact.findOneAndUpdate({ _id: id, owner }, req.body);
-//     if (!result) {
-//       throw HttpError(404, `Contact with id=${id} not found`);
-//     }
-//     res.json(result);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: '' });

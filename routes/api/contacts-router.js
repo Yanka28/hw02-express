@@ -6,8 +6,6 @@ import {
   isValidId,
 } from '../../middlewares/index.js';
 
-// import { userSignupSchema, userSigninSchema } from '../../models/User.js';
-
 const router = express.Router();
 
 router.use(authenticate);
