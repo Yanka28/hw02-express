@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken';
 
 import { HttpError } from '../helpers/index.js';
 import User from '../models/User.js';
-import { userSignupSchema, userSigninSchema } from '../models/User.js';
+import {
+  userSignupSchema,
+  userSigninSchema,
+  userSubscriptionSchema,
+} from '../models/User.js';
 
 const { JWT_SECRET } = process.env;
 
@@ -62,6 +66,43 @@ const getCurrent = async (req, res) => {
     email,
   });
 };
+const updateSubscription = async (req, res, next) => {
+  try {
+    const { error } = userSubscriptionSchema.validate(req.body);
+    if (error) {
+      throw HttpError(400, 'missing field subscription');
+    }
+    console.log(req.body);
+    const { _id } = req.user;
+    console.log(req.user);
+    const result = await User.findOneAndUpdate({ _id }, req.body);
+    console.log(result);
+    if (!result) {
+      throw HttpError(404, `User with id=${id} not found`);
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// const updateStatusContact = async (req, res, next) => {
+//   try {
+//     const { error } = contactFavoriteSchema.validate(req.body);
+//     if (error) {
+//       throw HttpError(400, 'missing field favorite');
+//     }
+//     const { id } = req.params;
+//     const { _id: owner } = req.user;
+//     const result = await Contact.findOneAndUpdate({ _id: id, owner }, req.body);
+//     if (!result) {
+//       throw HttpError(404, `Contact with id=${id} not found`);
+//     }
+//     res.json(result);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 const logout = async (req, res) => {
   const { _id } = req.user;
@@ -77,4 +118,5 @@ export default {
   signin,
   getCurrent,
   logout,
+  updateSubscription,
 };

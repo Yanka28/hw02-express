@@ -12,4 +12,6 @@ authRouter.get('/users/current', authenticate, authController.getCurrent);
 
 authRouter.post('/users/logout', authenticate, authController.logout);
 
+authRouter.patch('/users', authenticate, authController.updateSubscription);
+
 export default authRouter;
