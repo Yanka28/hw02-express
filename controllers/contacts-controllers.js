@@ -53,8 +53,8 @@ const add = async (req, res, next) => {
     console.log(oldPath);
 
     await fs.rename(oldPath, newPath);
-    const avatar = path.join('avatars', filename);
-    const result = await Contact.create({ ...req.body, avatar, owner });
+    const avatarURL = path.join('avatars', filename);
+    const result = await Contact.create({ ...req.body, avatarURL, owner });
 
     res.status(201).json(result);
   } catch (error) {

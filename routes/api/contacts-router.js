@@ -15,7 +15,12 @@ router.get('/', contactController.getAll);
 
 router.get('/:id', isValidId, contactController.getById);
 
-router.post('/', upload.single('avatar'), isEmptyBody, contactController.add);
+router.post(
+  '/',
+  upload.single('avatarURL'),
+  isEmptyBody,
+  contactController.add
+);
 
 router.delete('/:id', isValidId, contactController.deleteById);
 

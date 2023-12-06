@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import { HttpError } from '../helpers/index.js';
+import gravatar from 'gravatar';
 import User from '../models/User.js';
 import {
   userSignupSchema,
@@ -18,12 +19,22 @@ const signup = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { email, password } = req.body;
+    const avatarURL = gravatar.url(
+      email,
+      { s: '200', r: 'x', d: 'retro' },
+      false
+    );
+    console.log(avatarURL);
     const user = await User.findOne({ email });
     if (user) {
       throw HttpError(409, 'Email already exist');
     }
     const hashPassword = await bcrypt.hash(password, 10);
-    const result = await User.create({ ...req.body, password: hashPassword });
+    const result = await User.create({
+      ...req.body,
+      password: hashPassword,
+      avatarURL: avatarURL,
+    });
     res.status(201).json(result);
   } catch (error) {
     next(error);
