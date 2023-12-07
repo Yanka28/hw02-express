@@ -24,7 +24,6 @@ const userSchema = new Schema(
     },
     avatarURL: {
       type: String,
-      required: true,
     },
     token: String,
   },
@@ -54,6 +53,10 @@ export const userSigninSchema = Joi.object({
 
 export const userSubscriptionSchema = Joi.object({
   subscription: Joi.string().valid('starter', 'pro', 'business').required(),
+});
+
+export const userAvatarsSchema = Joi.object({
+  avatarURL: Joi.string().uri(),
 });
 
 const User = model('user', userSchema);

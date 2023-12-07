@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate, isEmptyBody } from '../../middlewares/index.js';
+import { authenticate, isEmptyBody, upload } from '../../middlewares/index.js';
 import authController from '../../controllers/auth-controller.js';
 
 const authRouter = express.Router();
@@ -14,6 +14,11 @@ authRouter.post('/users/logout', authenticate, authController.logout);
 
 authRouter.patch('/users', authenticate, authController.updateSubscription);
 
-// authRouter.get('/users/avatars', authenticate, authController.getCurrent);
+authRouter.patch(
+  '/users/avatars',
+  upload.single('avatarURL'),
+  authenticate,
+  authController.updateAvatars
+);
 
 export default authRouter;

@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
-import path from 'path';
+// import fs from 'fs/promises';
+// import path from 'path';
 import { HttpError, cloudinary } from '../helpers/index.js';
 import {
   contactAddSchema,
@@ -7,8 +7,6 @@ import {
   contactFavoriteSchema,
 } from '../models/Contact.js';
 import Contact from '../models/Contact.js';
-
-const avatarsPath = path.resolve('public', 'avatars');
 
 const getAll = async (req, res, next) => {
   try {
@@ -47,15 +45,7 @@ const add = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { _id: owner } = req.user;
-    const { path: oldPath, filename } = req.file;
-    const newPath = path.join(avatarsPath, filename);
-    console.log(newPath);
-    console.log(oldPath);
-
-    await fs.rename(oldPath, newPath);
-    const avatarURL = path.join('avatars', filename);
-    const result = await Contact.create({ ...req.body, avatarURL, owner });
-
+    const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);
