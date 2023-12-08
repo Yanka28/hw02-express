@@ -2,8 +2,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import fs from 'fs/promises';
 import path from 'path';
-import { HttpError } from '../helpers/index.js';
 import gravatar from 'gravatar';
+import Jimp from 'jimp';
+import { HttpError } from '../helpers/index.js';
+
 import User from '../models/User.js';
 import {
   userSignupSchema,
@@ -11,6 +13,7 @@ import {
   userSubscriptionSchema,
   userAvatarsSchema,
 } from '../models/User.js';
+import { write } from 'fs';
 
 const avatarsPath = path.resolve('public', 'avatars');
 
@@ -25,10 +28,9 @@ const signup = async (req, res, next) => {
     const { email, password } = req.body;
     const avatarURL = gravatar.url(
       email,
-      { s: '200', r: 'x', d: 'retro' },
+      { s: '250', r: 'x', d: 'retro' },
       false
     );
-    console.log(avatarURL);
     const user = await User.findOne({ email });
     if (user) {
       throw HttpError(409, 'Email already exist');
@@ -69,7 +71,6 @@ const signin = async (req, res, next) => {
     res.json({
       token,
     });
-    // res.status(201).json(result);
   } catch (error) {
     next(error);
   }
@@ -88,9 +89,7 @@ const updateSubscription = async (req, res, next) => {
       throw HttpError(400, 'missing field subscription');
     }
     const { _id } = req.user;
-    console.log(req.user);
     const result = await User.findOneAndUpdate({ _id }, req.body);
-    console.log(result);
     if (!result) {
       throw HttpError(404, `User with id=${id} not found`);
     }
@@ -105,23 +104,20 @@ const updateAvatars = async (req, res, next) => {
     if (error) {
       throw HttpError(400, 'missing field avatarURL');
     }
-    // const { _id: owner } = req.user;
-    //   const { path: oldPath, filename } = req.file;
-    //   const newPath = path.join(postersPath, filename);
-    //   await fs.rename(oldPath, newPath);
-
-    //   const poster = path.join('posters', filename);
-    //   const result = await Movie.create({ ...req.body, poster, owner });
-
-    //   res.status(201).json(result);
     const { _id } = req.user;
-    const { path: oldPath, filename } = req.file;
-    const newPath = path.join(avatarsPath, filename);
-    console.log(avatarsPath);
+    const { path: oldPath } = req.file;
+
+    const newName = `${req.user.email.split('@')[0]}` + '.jpg';
+    Jimp.read(`${oldPath}`, (err, avatar) => {
+      if (err) throw err;
+      avatar.resize(50, 50).write(newName);
+    });
+
+    const newPath = path.join(avatarsPath, newName);
+
     await fs.rename(oldPath, newPath);
-    const avatarURL = path.join('avatars', filename);
-    // const result = await Movie.create({ ...req.body, poster, owner });
-    console.log(req.body);
+    const avatarURL = path.join('avatars', newName);
+
     const result = await User.findOneAndUpdate(
       { _id },
       { ...req.body, avatarURL: avatarURL }
