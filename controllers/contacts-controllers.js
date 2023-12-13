@@ -1,4 +1,6 @@
-import { HttpError } from '../helpers/index.js';
+// import fs from 'fs/promises';
+// import path from 'path';
+import { HttpError, cloudinary } from '../helpers/index.js';
 import {
   contactAddSchema,
   contactUpdateSchema,
