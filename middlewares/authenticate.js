@@ -8,7 +8,6 @@ const { JWT_SECRET } = process.env;
 
 const authenticate = async (req, res, next) => {
   const { authorization } = req.headers;
-
   if (!authorization) {
     throw HttpError(401, 'Not authorized');
   }
